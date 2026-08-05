@@ -1,5 +1,5 @@
 const TIMEREX_URL = "https://timerex.net/s/kit19940501_5670/4a24126b/";
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbzIJqjkQnw34CkspPvRz2Qt9j4-rJtLx_DQldNgctPJs1OgC4OJbw5ooVTZHag1hXNo/exec";
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbyQbpgrWzkKCBfFwYKHPRoxByu8bBGlkOJ9ivgp3Rzp372KW1ItNpKWDYR0zWbfa8gsDg/exec";
 
     const questions = [
       {
