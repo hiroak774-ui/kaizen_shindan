@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="4つの質問で、業務改善の優先ポイントを無料診断。転記・集計・確認・情報共有など、日々の業務をもっとラクにするヒントが分かります。" />
   <meta name="theme-color" content="#f7f9fc" />
+  <link rel="icon" type="image/png" href="./kaizenkun-favicon.png" />
+  <link rel="apple-touch-icon" href="./kaizenkun-icon.png" />
   <title>無料業務改善診断｜隣のカイゼンくん</title>
   <style>
     :root {
@@ -91,17 +93,19 @@
     }
 
     .brand-mark {
-      width: 38px;
-      height: 38px;
+      width: 46px;
+      height: 46px;
       display: grid;
       place-items: center;
-      border-radius: 13px;
-      color: #fff;
-      background: linear-gradient(135deg, var(--primary), var(--accent));
-      box-shadow: 0 10px 24px rgba(37, 99, 235, .28);
+      flex: 0 0 auto;
+      border-radius: 50%;
+      background: rgba(255,255,255,.82);
+      border: 1px solid rgba(37,99,235,.14);
+      box-shadow: 0 10px 24px rgba(37, 99, 235, .18);
+      overflow: hidden;
     }
 
-    .brand-mark svg { width: 22px; height: 22px; }
+    .brand-mark img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .brand-name { font-size: 16px; }
 
     .btn {
@@ -688,7 +692,7 @@
       .container { width: min(calc(100% - 28px), var(--container)); }
       .site-header { padding-top: 12px; }
       .brand-name { font-size: 14px; }
-      .brand-mark { width: 34px; height: 34px; border-radius: 11px; }
+      .brand-mark { width: 40px; height: 40px; }
       .header-inner .btn { min-height: 42px; padding: 0 16px; font-size: 13px; }
       .hero { padding: 112px 0 64px; }
       h1 { font-size: clamp(42px, 13vw, 60px); }
@@ -730,7 +734,7 @@
     <div class="container header-inner">
       <a href="#top" class="brand" aria-label="隣のカイゼンくん トップへ">
         <span class="brand-mark" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14l5-5 4 4 7-7"/><path d="M15 6h5v5"/><path d="M5 20h14"/></svg>
+          <img src="./kaizenkun-icon.png" alt="" width="46" height="46" />
         </span>
         <span class="brand-name">隣のカイゼンくん</span>
       </a>
@@ -858,7 +862,7 @@
 
   <footer>
     <div class="container footer-inner">
-      <div class="brand"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 14l5-5 4 4 7-7"/><path d="M15 6h5v5"/><path d="M5 20h14"/></svg></span><span class="brand-name">隣のカイゼンくん</span></div>
+      <div class="brand"><span class="brand-mark" aria-hidden="true"><img src="./kaizenkun-icon.png" alt="" width="46" height="46" /></span><span class="brand-name">隣のカイゼンくん</span></div>
       <div>© 2026 隣のカイゼンくん</div>
     </div>
   </footer>
