@@ -8,7 +8,726 @@
   <link rel="icon" type="image/png" href="./kaizenkun-favicon.png" />
   <link rel="apple-touch-icon" href="./kaizenkun-icon.png" />
   <title>無料業務改善診断｜隣のカイゼンくん</title>
-  <link rel="stylesheet" href="./style.css" />
+  <style>
+    :root {
+      --bg: #f7f9fc;
+      --surface: rgba(255, 255, 255, 0.76);
+      --surface-solid: #ffffff;
+      --text: #101828;
+      --muted: #667085;
+      --line: rgba(16, 24, 40, 0.10);
+      --primary: #2563eb;
+      --primary-dark: #164cc5;
+      --primary-soft: #eaf1ff;
+      --accent: #7c3aed;
+      --success: #12b76a;
+      --warning: #f79009;
+      --danger: #f04438;
+      --shadow-lg: 0 32px 80px rgba(15, 23, 42, 0.14);
+      --shadow-md: 0 18px 50px rgba(15, 23, 42, 0.10);
+      --shadow-sm: 0 8px 24px rgba(15, 23, 42, 0.08);
+      --radius-xl: 32px;
+      --radius-lg: 24px;
+      --radius-md: 18px;
+      --radius-sm: 12px;
+      --container: 1160px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 12% 12%, rgba(37, 99, 235, .13), transparent 28%),
+        radial-gradient(circle at 84% 8%, rgba(124, 58, 237, .10), transparent 24%),
+        linear-gradient(180deg, #fbfdff 0%, var(--bg) 42%, #ffffff 100%);
+      min-height: 100vh;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    body.modal-open { overflow: hidden; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    button { font: inherit; }
+    a { color: inherit; text-decoration: none; }
+
+    .container {
+      width: min(calc(100% - 40px), var(--container));
+      margin: 0 auto;
+    }
+
+    .site-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 40;
+      padding: 16px 0;
+      transition: .3s ease;
+    }
+
+    .site-header.scrolled {
+      padding: 10px 0;
+      background: rgba(247, 249, 252, .78);
+      border-bottom: 1px solid rgba(16, 24, 40, .07);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      letter-spacing: -.03em;
+      white-space: nowrap;
+    }
+
+    .brand-mark {
+      width: 46px;
+      height: 46px;
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      border-radius: 50%;
+      background: rgba(255,255,255,.82);
+      border: 1px solid rgba(37,99,235,.14);
+      box-shadow: 0 10px 24px rgba(37, 99, 235, .18);
+      overflow: hidden;
+    }
+
+    .brand-mark img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .brand-name { font-size: 16px; }
+
+    .btn {
+      border: 0;
+      border-radius: 999px;
+      min-height: 48px;
+      padding: 0 22px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      font-weight: 800;
+      letter-spacing: -.01em;
+      cursor: pointer;
+      transition: transform .2s ease, box-shadow .2s ease, background .2s ease, opacity .2s ease;
+    }
+
+    .btn:hover { transform: translateY(-2px); }
+    .btn:active { transform: translateY(0); }
+
+    .btn-primary {
+      color: #fff;
+      background: linear-gradient(135deg, var(--primary), #1d4ed8 58%, var(--accent));
+      box-shadow: 0 14px 30px rgba(37, 99, 235, .24);
+    }
+
+    .btn-primary:hover { box-shadow: 0 18px 38px rgba(37, 99, 235, .32); }
+
+    .btn-secondary {
+      color: var(--text);
+      background: rgba(255,255,255,.72);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow-sm);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    .btn-large { min-height: 58px; padding: 0 30px; font-size: 16px; }
+    .btn-full { width: 100%; }
+
+    .hero {
+      min-height: 100svh;
+      display: grid;
+      align-items: center;
+      padding: 134px 0 82px;
+      position: relative;
+    }
+
+    .hero::before,
+    .hero::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(2px);
+      pointer-events: none;
+      animation: floatOrb 8s ease-in-out infinite;
+    }
+
+    .hero::before {
+      width: 180px;
+      height: 180px;
+      right: -40px;
+      top: 170px;
+      background: linear-gradient(135deg, rgba(37,99,235,.18), rgba(124,58,237,.08));
+    }
+
+    .hero::after {
+      width: 120px;
+      height: 120px;
+      left: -30px;
+      bottom: 70px;
+      background: linear-gradient(135deg, rgba(18,183,106,.10), rgba(37,99,235,.10));
+      animation-delay: -3s;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.08fr .92fr;
+      gap: 64px;
+      align-items: center;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid rgba(37,99,235,.16);
+      background: rgba(255,255,255,.72);
+      color: var(--primary-dark);
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-size: 13px;
+      font-weight: 800;
+      box-shadow: var(--shadow-sm);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    .eyebrow-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 0 5px rgba(18,183,106,.12);
+    }
+
+    h1 {
+      margin: 24px 0 24px;
+      font-size: clamp(44px, 6.8vw, 82px);
+      line-height: 1.08;
+      letter-spacing: -.055em;
+      font-weight: 850;
+    }
+
+    .gradient-text {
+      color: transparent;
+      background: linear-gradient(100deg, var(--primary) 8%, #2563eb 48%, var(--accent) 94%);
+      -webkit-background-clip: text;
+      background-clip: text;
+    }
+
+    .hero-copy {
+      max-width: 650px;
+      font-size: clamp(16px, 1.6vw, 20px);
+      color: var(--muted);
+      margin: 0 0 34px;
+      letter-spacing: -.01em;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .microcopy {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+      margin-top: 22px;
+      color: #475467;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .microcopy span { display: inline-flex; align-items: center; gap: 7px; }
+    .microcopy svg { width: 16px; height: 16px; color: var(--success); }
+
+    .diagnosis-preview {
+      position: relative;
+      min-height: 520px;
+      display: grid;
+      place-items: center;
+    }
+
+    .glass-card {
+      background: var(--surface);
+      border: 1px solid rgba(255,255,255,.86);
+      box-shadow: var(--shadow-lg);
+      backdrop-filter: blur(22px);
+      -webkit-backdrop-filter: blur(22px);
+    }
+
+    .preview-card {
+      width: min(100%, 500px);
+      border-radius: var(--radius-xl);
+      padding: 30px;
+      position: relative;
+      overflow: hidden;
+      transform: rotate(-1.3deg);
+      animation: cardFloat 6s ease-in-out infinite;
+    }
+
+    .preview-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,.50), transparent 40%);
+      pointer-events: none;
+    }
+
+    .preview-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 26px;
+    }
+
+    .preview-label { font-size: 13px; color: var(--muted); font-weight: 700; }
+    .preview-step { font-size: 12px; font-weight: 800; color: var(--primary); background: var(--primary-soft); border-radius: 999px; padding: 6px 10px; }
+    .preview-question { font-size: 24px; line-height: 1.45; letter-spacing: -.035em; font-weight: 850; margin: 0 0 22px; }
+
+    .fake-option {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 15px 16px;
+      margin-top: 11px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.62);
+      color: #344054;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .fake-option.active {
+      border-color: rgba(37,99,235,.45);
+      background: rgba(234,241,255,.84);
+      color: var(--primary-dark);
+      box-shadow: inset 0 0 0 1px rgba(37,99,235,.08);
+    }
+
+    .fake-radio {
+      width: 19px;
+      height: 19px;
+      border-radius: 50%;
+      border: 2px solid #98a2b3;
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+    }
+
+    .fake-option.active .fake-radio { border-color: var(--primary); }
+    .fake-option.active .fake-radio::after { content: ""; width: 9px; height: 9px; border-radius: 50%; background: var(--primary); }
+
+    .floating-chip {
+      position: absolute;
+      border-radius: 18px;
+      padding: 13px 16px;
+      background: rgba(255,255,255,.84);
+      border: 1px solid rgba(255,255,255,.92);
+      box-shadow: var(--shadow-md);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      font-size: 13px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .floating-chip svg { width: 19px; height: 19px; }
+    .chip-a { right: -16px; top: 52px; animation: chipFloat 5s ease-in-out infinite; }
+    .chip-b { left: -26px; bottom: 60px; animation: chipFloat 5.5s ease-in-out infinite -1.5s; }
+    .chip-a svg { color: var(--primary); }
+    .chip-b svg { color: var(--success); }
+
+    section { padding: 110px 0; }
+
+    .section-heading {
+      max-width: 760px;
+      margin: 0 auto 52px;
+      text-align: center;
+    }
+
+    .section-kicker {
+      color: var(--primary);
+      font-size: 13px;
+      font-weight: 850;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .section-heading h2 {
+      margin: 12px 0 16px;
+      font-size: clamp(32px, 4.4vw, 54px);
+      line-height: 1.18;
+      letter-spacing: -.045em;
+    }
+
+    .section-heading p { margin: 0; color: var(--muted); font-size: 17px; }
+
+    .type-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+    }
+
+    .type-card {
+      padding: 30px;
+      border-radius: var(--radius-lg);
+      min-height: 360px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      transition: transform .3s ease, box-shadow .3s ease;
+    }
+
+    .type-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-lg); }
+    .type-card::after { content: ""; position: absolute; width: 170px; height: 170px; border-radius: 50%; right: -70px; bottom: -70px; opacity: .18; }
+    .type-card:nth-child(1)::after { background: var(--primary); }
+    .type-card:nth-child(2)::after { background: var(--accent); }
+    .type-card:nth-child(3)::after { background: var(--success); }
+
+    .type-icon {
+      width: 54px;
+      height: 54px;
+      border-radius: 17px;
+      display: grid;
+      place-items: center;
+      margin-bottom: 28px;
+    }
+    .type-icon svg { width: 26px; height: 26px; }
+    .icon-blue { color: var(--primary); background: var(--primary-soft); }
+    .icon-purple { color: var(--accent); background: #f1eafe; }
+    .icon-green { color: var(--success); background: #e8f8f0; }
+
+    .type-card h3 { font-size: 24px; letter-spacing: -.03em; margin: 0 0 12px; }
+    .type-card p { margin: 0; color: var(--muted); font-size: 15px; }
+    .type-points { margin: 22px 0 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+    .type-points li { display: flex; align-items: flex-start; gap: 9px; font-size: 14px; color: #344054; font-weight: 700; }
+    .type-points svg { width: 17px; height: 17px; color: var(--success); margin-top: 3px; flex: 0 0 auto; }
+
+    .stars-wrap { margin-top: auto; padding-top: 26px; }
+    .stars-label { font-size: 12px; color: var(--muted); font-weight: 800; margin-bottom: 6px; }
+    .stars { letter-spacing: 4px; color: #f5b301; font-size: 20px; }
+
+    .process {
+      position: relative;
+    }
+
+    .process-shell {
+      border-radius: var(--radius-xl);
+      padding: 46px;
+      display: grid;
+      grid-template-columns: .92fr 1.08fr;
+      gap: 54px;
+      align-items: center;
+    }
+
+    .process-copy h2 { font-size: clamp(31px, 4vw, 50px); line-height: 1.2; letter-spacing: -.045em; margin: 12px 0 18px; }
+    .process-copy p { color: var(--muted); margin: 0 0 28px; }
+
+    .steps { display: grid; gap: 14px; }
+    .step-item { display: grid; grid-template-columns: 44px 1fr; gap: 15px; align-items: start; padding: 17px; border-radius: 18px; background: rgba(255,255,255,.62); border: 1px solid var(--line); }
+    .step-number { width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center; font-weight: 850; color: var(--primary); background: var(--primary-soft); }
+    .step-item h3 { font-size: 16px; margin: 1px 0 3px; }
+    .step-item p { font-size: 13px; margin: 0; color: var(--muted); }
+
+    .bottom-cta { padding-top: 30px; }
+    .cta-card {
+      position: relative;
+      overflow: hidden;
+      border-radius: var(--radius-xl);
+      padding: 70px 50px;
+      text-align: center;
+      color: #fff;
+      background: linear-gradient(135deg, #0f172a 0%, #172554 48%, #312e81 100%);
+      box-shadow: 0 34px 90px rgba(15,23,42,.24);
+    }
+
+    .cta-card::before,
+    .cta-card::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(2px);
+      pointer-events: none;
+    }
+    .cta-card::before { width: 260px; height: 260px; right: -80px; top: -100px; background: rgba(59,130,246,.30); }
+    .cta-card::after { width: 220px; height: 220px; left: -80px; bottom: -120px; background: rgba(124,58,237,.28); }
+    .cta-card > * { position: relative; z-index: 1; }
+    .cta-card h2 { font-size: clamp(34px, 4vw, 54px); line-height: 1.2; letter-spacing: -.045em; margin: 0 0 18px; }
+    .cta-card p { max-width: 650px; margin: 0 auto 30px; color: rgba(255,255,255,.72); }
+    .cta-card .btn { background: #fff; color: #172554; box-shadow: 0 18px 34px rgba(0,0,0,.18); }
+
+    footer { padding: 36px 0 54px; color: var(--muted); font-size: 12px; }
+    .footer-inner { display: flex; align-items: center; justify-content: space-between; gap: 20px; border-top: 1px solid var(--line); padding-top: 28px; }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(15, 23, 42, .46);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      opacity: 0;
+      transition: opacity .25s ease;
+    }
+
+    .modal-backdrop.is-open { display: flex; }
+    .modal-backdrop.is-visible { opacity: 1; }
+
+    .modal {
+      width: min(100%, 720px);
+      max-height: min(90svh, 820px);
+      overflow-y: auto;
+      border-radius: 30px;
+      background: rgba(255,255,255,.94);
+      border: 1px solid rgba(255,255,255,.92);
+      box-shadow: 0 40px 120px rgba(15,23,42,.28);
+      transform: translateY(18px) scale(.985);
+      transition: transform .25s ease;
+    }
+
+    .modal-backdrop.is-visible .modal { transform: translateY(0) scale(1); }
+
+    .modal-header {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 22px 26px 16px;
+      background: rgba(255,255,255,.88);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .modal-title { margin: 0; font-size: 18px; letter-spacing: -.02em; }
+    .icon-btn { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--line); background: #fff; display: grid; place-items: center; cursor: pointer; color: #475467; }
+    .icon-btn svg { width: 19px; height: 19px; }
+
+    .progress-wrap { padding: 18px 26px 0; }
+    .progress-info { display: flex; align-items: center; justify-content: space-between; gap: 20px; color: var(--muted); font-size: 12px; font-weight: 800; margin-bottom: 8px; }
+    .progress-bar { height: 7px; border-radius: 999px; background: #edf1f7; overflow: hidden; }
+    .progress-fill { height: 100%; width: 25%; border-radius: inherit; background: linear-gradient(90deg, var(--primary), var(--accent)); transition: width .35s ease; }
+
+    .modal-body { padding: 28px 26px 28px; }
+    .question-screen { animation: fadeSlide .32s ease; }
+    .question-kicker { font-size: 13px; color: var(--primary); font-weight: 850; margin-bottom: 10px; }
+    .question-title { margin: 0 0 8px; font-size: clamp(25px, 4vw, 34px); line-height: 1.35; letter-spacing: -.04em; }
+    .question-note { margin: 0 0 24px; color: var(--muted); font-size: 14px; }
+
+    .option-list { display: grid; gap: 12px; }
+    .option-card {
+      display: grid;
+      grid-template-columns: 24px 1fr;
+      gap: 14px;
+      align-items: center;
+      width: 100%;
+      text-align: left;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.72);
+      padding: 17px 18px;
+      cursor: pointer;
+      transition: .2s ease;
+      color: var(--text);
+    }
+
+    .option-card:hover { border-color: rgba(37,99,235,.36); transform: translateY(-1px); box-shadow: 0 10px 24px rgba(15,23,42,.06); }
+    .option-card.selected { border-color: var(--primary); background: var(--primary-soft); box-shadow: inset 0 0 0 1px rgba(37,99,235,.08); }
+    .option-radio { width: 22px; height: 22px; border-radius: 50%; border: 2px solid #98a2b3; display: grid; place-items: center; }
+    .option-card.selected .option-radio { border-color: var(--primary); }
+    .option-card.selected .option-radio::after { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--primary); }
+    .option-main { font-weight: 800; font-size: 15px; line-height: 1.45; }
+    .option-sub { display: block; margin-top: 4px; color: var(--muted); font-size: 12px; font-weight: 600; }
+
+    .modal-actions { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-top: 26px; }
+    .btn-back { visibility: hidden; }
+    .btn-back.is-visible { visibility: visible; }
+    .btn-next[disabled] { opacity: .45; pointer-events: none; }
+
+    .result-body { padding: 34px 28px 30px; }
+    .result-hero { text-align: center; }
+    .result-badge { display: inline-flex; align-items: center; gap: 8px; border-radius: 999px; color: var(--primary); background: var(--primary-soft); padding: 8px 13px; font-size: 12px; font-weight: 850; }
+    .result-icon { width: 72px; height: 72px; border-radius: 24px; display: grid; place-items: center; margin: 22px auto 18px; color: #fff; background: linear-gradient(135deg, var(--primary), var(--accent)); box-shadow: 0 18px 38px rgba(37,99,235,.26); }
+    .result-icon svg { width: 34px; height: 34px; }
+    .result-title { font-size: clamp(30px, 5vw, 44px); line-height: 1.2; letter-spacing: -.045em; margin: 0 0 10px; }
+    .result-lead { color: var(--muted); max-width: 560px; margin: 0 auto; }
+
+    .expectation-card { margin-top: 26px; padding: 20px; border-radius: 20px; background: linear-gradient(135deg, #fff9e7, #fffdf7); border: 1px solid rgba(245,179,1,.22); text-align: center; }
+    .expectation-label { font-size: 12px; color: #7a5a00; font-weight: 850; }
+    .expectation-stars { font-size: 30px; letter-spacing: 5px; color: #f5b301; margin: 5px 0 3px; }
+    .expectation-text { font-size: 12px; color: #8a6a15; }
+
+    .result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 18px; }
+    .result-panel { border: 1px solid var(--line); border-radius: 20px; padding: 20px; background: rgba(255,255,255,.76); }
+    .result-panel h3 { margin: 0 0 12px; font-size: 15px; }
+    .result-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+    .result-list li { display: flex; gap: 9px; align-items: flex-start; font-size: 13px; color: #475467; }
+    .result-list svg { width: 16px; height: 16px; flex: 0 0 auto; margin-top: 3px; color: var(--success); }
+    .score-bars { display: grid; gap: 11px; }
+    .score-row { display: grid; grid-template-columns: 104px 1fr 34px; gap: 9px; align-items: center; font-size: 12px; font-weight: 800; color: #475467; }
+    .score-track { height: 8px; border-radius: 999px; background: #edf1f7; overflow: hidden; }
+    .score-fill { height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--primary), var(--accent)); transition: width .7s ease .2s; }
+    .result-cta { margin-top: 20px; padding: 22px; border-radius: 22px; background: #f8faff; border: 1px solid rgba(37,99,235,.14); text-align: center; }
+    .result-cta p { margin: 0 0 14px; color: #475467; font-size: 13px; }
+    .result-subactions { display: flex; justify-content: center; margin-top: 12px; }
+    .text-button { border: 0; background: transparent; color: var(--muted); font-size: 12px; text-decoration: underline; cursor: pointer; }
+
+    .lead-gate { padding: 34px 28px 30px; }
+    .lead-gate-head { text-align: center; }
+    .lead-gate-icon { width: 76px; height: 76px; border-radius: 24px; display: grid; place-items: center; margin: 0 auto 18px; color: #fff; background: linear-gradient(135deg, var(--primary), var(--accent)); box-shadow: 0 18px 38px rgba(37,99,235,.26); }
+    .lead-gate-icon svg { width: 36px; height: 36px; }
+    .lead-gate h2 { margin: 0 0 10px; font-size: clamp(30px, 5vw, 44px); line-height: 1.2; letter-spacing: -.045em; }
+    .lead-gate-lead { margin: 0 auto; max-width: 560px; color: var(--muted); }
+    .found-count { margin: 24px 0 18px; padding: 20px; border-radius: 22px; background: linear-gradient(135deg, #f8faff, #f5f3ff); border: 1px solid rgba(37,99,235,.14); text-align: center; }
+    .found-count strong { display: block; font-size: 30px; line-height: 1.25; letter-spacing: -.04em; }
+    .found-count span { color: var(--muted); font-size: 13px; }
+    .lead-form { display: grid; gap: 16px; margin-top: 22px; }
+    .form-field { display: grid; gap: 8px; }
+    .form-field label { font-size: 13px; font-weight: 850; color: #344054; }
+    .required-badge { margin-left: 7px; color: var(--danger); font-size: 11px; }
+    .form-field input { width: 100%; min-height: 54px; border: 1px solid var(--line); border-radius: 16px; padding: 0 16px; background: #fff; color: var(--text); font: inherit; outline: none; transition: border-color .2s ease, box-shadow .2s ease; }
+    .form-field input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(37,99,235,.10); }
+    .form-field input.is-error { border-color: var(--danger); box-shadow: 0 0 0 4px rgba(240,68,56,.08); }
+    .field-note { color: var(--muted); font-size: 11px; }
+    .field-error { display: none; color: var(--danger); font-size: 11px; font-weight: 700; }
+    .field-error.show { display: block; }
+    .privacy-note { margin: 14px 0 0; color: var(--muted); font-size: 11px; line-height: 1.65; text-align: center; }
+    .improvement-list { display: grid; gap: 12px; margin-top: 18px; }
+    .improvement-item { display: grid; grid-template-columns: 42px 1fr; gap: 13px; align-items: start; padding: 17px; border-radius: 18px; border: 1px solid var(--line); background: rgba(255,255,255,.78); }
+    .improvement-number { width: 42px; height: 42px; border-radius: 14px; display: grid; place-items: center; color: var(--primary); background: var(--primary-soft); font-size: 13px; font-weight: 900; }
+    .improvement-item h4 { margin: 0 0 4px; font-size: 15px; }
+    .improvement-item p { margin: 0; color: var(--muted); font-size: 12px; }
+    .free-offer { margin-top: 20px; padding: 22px; border-radius: 22px; text-align: center; color: #fff; background: linear-gradient(135deg, #0f172a, #312e81); box-shadow: var(--shadow-md); }
+    .free-offer strong { display: block; font-size: 20px; margin-bottom: 6px; }
+    .free-offer span { font-size: 12px; color: rgba(255,255,255,.72); }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 28px;
+      z-index: 150;
+      transform: translate(-50%, 20px);
+      opacity: 0;
+      pointer-events: none;
+      background: #101828;
+      color: #fff;
+      border-radius: 999px;
+      padding: 12px 18px;
+      font-size: 13px;
+      font-weight: 700;
+      box-shadow: var(--shadow-md);
+      transition: .3s ease;
+    }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+    .reveal { opacity: 0; transform: translateY(28px); transition: opacity .7s ease, transform .7s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    @keyframes cardFloat { 0%,100% { transform: rotate(-1.3deg) translateY(0); } 50% { transform: rotate(-.4deg) translateY(-10px); } }
+    @keyframes chipFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
+    @keyframes floatOrb { 0%,100% { transform: translate3d(0,0,0); } 50% { transform: translate3d(0,-14px,0); } }
+    @keyframes fadeSlide { from { opacity: 0; transform: translateX(12px); } to { opacity: 1; transform: translateX(0); } }
+
+
+    .analysis-loader { padding: 54px 28px 48px; text-align: center; }
+    .analysis-orbit { width: 96px; height: 96px; margin: 0 auto 24px; position: relative; display: grid; place-items: center; }
+    .analysis-orbit::before, .analysis-orbit::after { content: ""; position: absolute; border-radius: 50%; }
+    .analysis-orbit::before { inset: 0; border: 3px solid rgba(37,99,235,.12); border-top-color: var(--primary); border-right-color: var(--accent); animation: analysisSpin 1.1s linear infinite; }
+    .analysis-orbit::after { inset: 14px; border: 2px solid rgba(124,58,237,.10); border-bottom-color: var(--accent); animation: analysisSpinReverse 1.5s linear infinite; }
+    .analysis-orbit-icon { width: 48px; height: 48px; border-radius: 17px; display: grid; place-items: center; color: #fff; background: linear-gradient(135deg,var(--primary),var(--accent)); box-shadow: 0 14px 30px rgba(37,99,235,.25); animation: analysisPulse 1.7s ease-in-out infinite; }
+    .analysis-orbit-icon svg { width: 25px; height: 25px; }
+    .analysis-loader h2 { margin: 0 0 8px; font-size: clamp(27px,4vw,38px); letter-spacing: -.04em; }
+    .analysis-loader > p { margin: 0 auto; max-width: 520px; color: var(--muted); }
+    .analysis-steps { width: min(100%, 470px); margin: 30px auto 0; display: grid; gap: 10px; text-align: left; }
+    .analysis-step { display: flex; align-items: center; gap: 12px; padding: 13px 15px; border-radius: 15px; border: 1px solid var(--line); background: rgba(255,255,255,.72); color: #667085; font-size: 13px; font-weight: 750; transition: .35s ease; }
+    .analysis-step-dot { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; flex: 0 0 auto; background: #edf1f7; color: #98a2b3; font-size: 11px; }
+    .analysis-step.active { border-color: rgba(37,99,235,.3); background: var(--primary-soft); color: var(--primary-dark); transform: translateX(4px); }
+    .analysis-step.active .analysis-step-dot { background: var(--primary); color: #fff; box-shadow: 0 0 0 5px rgba(37,99,235,.10); }
+    .analysis-step.done { color: #166534; background: #effcf5; border-color: rgba(18,183,106,.22); }
+    .analysis-step.done .analysis-step-dot { background: var(--success); color: #fff; }
+    .submit-status { min-height: 22px; margin-top: 8px; text-align: center; color: var(--danger); font-size: 12px; font-weight: 700; }
+    @keyframes analysisSpin { to { transform: rotate(360deg); } }
+    @keyframes analysisSpinReverse { to { transform: rotate(-360deg); } }
+    @keyframes analysisPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.07); } }
+
+    @media (max-width: 920px) {
+      .hero { min-height: auto; padding-top: 130px; }
+      .hero-grid, .process-shell { grid-template-columns: 1fr; }
+      .hero-grid { gap: 44px; }
+      .hero-copy br { display: none; }
+      .diagnosis-preview { min-height: 460px; }
+      .type-grid { grid-template-columns: 1fr; }
+      .type-card { min-height: auto; }
+      .process-shell { padding: 34px; gap: 36px; }
+    }
+
+    @media (max-width: 640px) {
+      .container { width: min(calc(100% - 28px), var(--container)); }
+      .site-header { padding-top: 12px; }
+      .brand-name { font-size: 14px; }
+      .brand-mark { width: 40px; height: 40px; }
+      .header-inner .btn { min-height: 42px; padding: 0 16px; font-size: 13px; }
+      .hero { padding: 112px 0 64px; }
+      h1 { font-size: clamp(42px, 13vw, 60px); }
+      .hero-actions { display: grid; }
+      .hero-actions .btn { width: 100%; }
+      .microcopy { gap: 10px 16px; }
+      .diagnosis-preview { min-height: 420px; }
+      .preview-card { padding: 22px; border-radius: 24px; }
+      .preview-question { font-size: 20px; }
+      .chip-a { right: -8px; top: 20px; }
+      .chip-b { left: -6px; bottom: 22px; }
+      .floating-chip { font-size: 11px; padding: 10px 12px; }
+      section { padding: 78px 0; }
+      .section-heading { margin-bottom: 34px; }
+      .section-heading p { font-size: 15px; }
+      .type-card { padding: 24px; }
+      .process-shell { padding: 25px 20px; border-radius: 26px; }
+      .cta-card { padding: 52px 22px; border-radius: 26px; }
+      .footer-inner { flex-direction: column; align-items: flex-start; }
+      .modal-backdrop { padding: 0; align-items: flex-end; }
+      .modal { width: 100%; max-height: 94svh; border-radius: 26px 26px 0 0; }
+      .modal-header { padding: 18px 18px 14px; }
+      .progress-wrap { padding: 16px 18px 0; }
+      .modal-body, .result-body, .lead-gate { padding: 24px 18px 24px; }
+      .modal-actions { position: sticky; bottom: 0; padding-top: 14px; background: linear-gradient(180deg, rgba(255,255,255,0), rgba(255,255,255,.98) 28%); }
+      .modal-actions .btn { min-height: 50px; }
+      .result-grid { grid-template-columns: 1fr; }
+      .score-row { grid-template-columns: 92px 1fr 32px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; }
+      .reveal { opacity: 1; transform: none; }
+    }
+  </style>
 </head>
 <body>
   <header class="site-header" id="siteHeader">
@@ -38,7 +757,7 @@
             <a class="btn btn-secondary btn-large" href="#types">診断タイプを見る</a>
           </div>
           <div class="microcopy">
-            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="m5 12 4 4L19 6"/></svg>会社名・HP入力で結果表示</span>
+            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="m5 12 4 4L19 6"/></svg>必要情報の入力後に結果表示</span>
             <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="m5 12 4 4L19 6"/></svg>完全無料</span>
             <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="m5 12 4 4L19 6"/></svg>結果はその場で表示</span>
           </div>
@@ -173,6 +892,199 @@
   </div>
 
   <div class="toast" id="toast">結果をコピーしました</div>
-  <script src="./script.js" defer></script>
+
+  <script>
+    const TIMEREX_URL = "https://timerex.net/s/kit19940501_5670/4a24126b/";
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbzIJqjkQnw34CkspPvRz2Qt9j4-rJtLx_DQldNgctPJs1OgC4OJbw5ooVTZHag1hXNo/exec";
+
+    const questions = [
+      {
+        id: "routine",
+        title: "日々の業務で、繰り返し発生する作業はどのくらいありますか？",
+        note: "最も近いものを1つ選んでください。",
+        options: [
+          { label: "かなり多い", sub: "毎日、複数の定型作業に時間を取られている", value: "many", scores: { transfer: 1, manual: 4, ai: 1 } },
+          { label: "いくつかある", sub: "週に何度か、同じ手順を繰り返している", value: "some", scores: { transfer: 1, manual: 2, ai: 1 } },
+          { label: "あまりない", sub: "定型作業より、個別対応が中心", value: "few", scores: { transfer: 0, manual: 0, ai: 0 } }
+        ]
+      },
+      {
+        id: "transfer",
+        title: "同じ情報を、複数の場所へ入力・転記することはありますか？",
+        note: "Excel、メール、チャット、社内システムなどを含みます。",
+        options: [
+          { label: "ほぼ毎日ある", sub: "二重入力やコピペが日常的に発生している", value: "high", scores: { transfer: 5, manual: 1, ai: 0 } },
+          { label: "週に数回ある", sub: "定期的に転記や集計が発生している", value: "mid", scores: { transfer: 3, manual: 1, ai: 0 } },
+          { label: "ほとんどない", sub: "一度の入力で業務が完結することが多い", value: "low", scores: { transfer: 0, manual: 0, ai: 0 } }
+        ]
+      },
+      {
+        id: "aiUsage",
+        title: "ChatGPTなどの生成AIを、業務でどの程度使っていますか？",
+        note: "会社としての利用状況に最も近いものを選んでください。",
+        options: [
+          { label: "ほとんど使っていない", sub: "個人利用も含め、業務ではほぼ未導入", value: "none", scores: { transfer: 0, manual: 0, ai: 5 } },
+          { label: "一部の人だけ使っている", sub: "文章作成や調査などで個人差がある", value: "partial", scores: { transfer: 0, manual: 1, ai: 3 } },
+          { label: "会社・チームで使っている", sub: "一定のルールや活用例がある", value: "active", scores: { transfer: 0, manual: 0, ai: 1 } }
+        ]
+      }
+    ];
+
+    const branchQuestions = {
+      none: {
+        id: "aiBranch",
+        title: "AIを使っていない一番大きな理由は何ですか？",
+        note: "導入の障壁を確認し、最初の一歩を診断します。",
+        options: [
+          { label: "何に使えるか分からない", sub: "具体的な活用イメージがまだない", value: "unknown", scores: { transfer: 0, manual: 0, ai: 3 } },
+          { label: "情報管理や安全面が不安", sub: "社内ルールや利用基準が決まっていない", value: "security", scores: { transfer: 0, manual: 0, ai: 2 } },
+          { label: "試す時間・担当者がいない", sub: "導入検討まで手が回っていない", value: "resource", scores: { transfer: 0, manual: 2, ai: 2 } }
+        ]
+      },
+      partial: {
+        id: "aiBranch",
+        title: "AI活用が一部の人に留まっている理由は何ですか？",
+        note: "定着を妨げているポイントに最も近いものを選んでください。",
+        options: [
+          { label: "人によって使い方に差がある", sub: "得意な人だけが活用している", value: "skill_gap", scores: { transfer: 0, manual: 1, ai: 2 } },
+          { label: "便利な使い方が共有されていない", sub: "活用例やプロンプトが属人化している", value: "not_shared", scores: { transfer: 0, manual: 1, ai: 2 } },
+          { label: "日常業務に組み込めていない", sub: "試してはいるが、継続利用につながっていない", value: "not_embedded", scores: { transfer: 1, manual: 1, ai: 3 } }
+        ]
+      },
+      active: {
+        id: "aiBranch",
+        title: "現在のAI活用で、もっと改善したいことは何ですか？",
+        note: "次の改善段階に近いものを選んでください。",
+        options: [
+          { label: "定型業務まで自動化したい", sub: "AIとツールをつなぎ、作業自体を減らしたい", value: "automation", scores: { transfer: 2, manual: 1, ai: 1 } },
+          { label: "チーム全体に定着させたい", sub: "活用方法やルールを標準化したい", value: "adoption", scores: { transfer: 0, manual: 1, ai: 1 } },
+          { label: "効果を見える化したい", sub: "時間削減や成果を数値で把握したい", value: "measurement", scores: { transfer: 0, manual: 0, ai: 1 } }
+        ]
+      }
+    };
+
+    const patterns = {
+      "P01-A": { patternId:"P01", type:"手作業過多型", stars:5, lead:"繰り返し作業の量が多く、まずは手作業そのものを減らす余地があります。", priorities:["定型業務","作業時間","標準化"], improvements:["定型作業の棚卸し","繰り返し業務のテンプレート化","入力フォームの統一","作業手順の標準化","定型通知の自動化"] },
+      "P02-A": { patternId:"P02", type:"転記・入力過多型", stars:5, lead:"同じ情報を複数の場所へ入力しているため、転記削減の効果が出やすい状態です。", priorities:["転記・入力","集計","業務自動化"], improvements:["入力フォームの一本化","Excel集計の自動化","転記先の整理","定型報告書の自動作成","入力ミス・重複チェックの自動化"] },
+      "P02-B": { patternId:"P02", type:"転記・入力過多型", stars:5, lead:"転記削減に加え、現在のAI活用を業務フローへ組み込むことで大きな改善が期待できます。", priorities:["転記・入力","業務自動化","AI活用"], improvements:["入力フォームの一本化","ツール間の自動連携","AIによる入力内容の整形","集計・報告書の自動生成","エラーチェックの自動化"] },
+      "P03-A": { patternId:"P03", type:"AI導入迷子型", stars:5, lead:"AIの具体的な使い道が見えていないため、身近で安全な業務から試すのが効果的です。", priorities:["AI導入","文章作成","情報整理"], improvements:["メール文章の作成支援","会議内容の要約","情報収集・整理への活用","社内向けAI活用例の作成","小さな業務での試験導入"] },
+      "P03-B": { patternId:"P03", type:"AI導入迷子型", stars:5, lead:"現在負担になっている入力・転記業務からAIを試すと、効果を実感しやすい状態です。", priorities:["AI導入","転記・入力","定型業務"], improvements:["文章作成へのAI導入","入力内容の自動整形","転記前データの要約・分類","定型報告書の下書き作成","AI活用業務の選定"] },
+      "P04-A": { patternId:"P04", type:"AI安全整備型", stars:4, lead:"安全面への不安が導入の障壁になっているため、ルール整備が最初の改善ポイントです。", priorities:["利用ルール","情報管理","試験導入"], improvements:["AI利用ルールの作成","入力禁止情報の明確化","利用可能ツールの選定","安全に試せる業務の選定","小規模な試験運用"] },
+      "P05-A": { patternId:"P05", type:"AI属人化型", stars:4, lead:"AIを使える人にノウハウが偏っているため、使い方を共有資産に変える必要があります。", priorities:["AI標準化","ナレッジ共有","教育"], improvements:["業務別プロンプト集の作成","活用事例の共有","共通テンプレートの整備","AI利用ルールの統一","短時間の社内勉強会"] },
+      "P05-B": { patternId:"P05", type:"AI属人化型", stars:4, lead:"便利な使い方が個人の中に留まっているため、再利用できる形で共有する余地があります。", priorities:["ナレッジ共有","AI標準化","マニュアル"], improvements:["活用事例一覧の作成","社内プロンプトライブラリの整備","業務別の使い方ガイド作成","成果の共有方法を統一","質問・相談窓口の設定"] },
+      "P06-A": { patternId:"P06", type:"AI定着不足型", stars:5, lead:"AIは試せているものの、日常業務の手順に組み込まれていない状態です。", priorities:["AI定着","業務フロー","定型作業"], improvements:["AIを使う業務の固定化","業務手順へのAI工程追加","テンプレートの共通化","利用頻度の簡易記録","効果の定期確認"] },
+      "P06-B": { patternId:"P06", type:"AI定着不足型", stars:5, lead:"AIを単発利用で終わらせず、負担の大きい転記業務へ組み込むと効果が出やすい状態です。", priorities:["AI定着","転記・入力","業務自動化"], improvements:["転記前後のAI整形","定型入力のテンプレート化","フォームとAIの連携","集計・報告作成へのAI組み込み","自動処理対象の選定"] },
+      "P07-A": { patternId:"P07", type:"自動化ステップアップ型", stars:5, lead:"AI活用の次段階として、定型業務とツールをつないで作業自体を減らせる状態です。", priorities:["業務自動化","ツール連携","効果測定"], improvements:["フォームとスプレッドシートの自動連携","AIによるデータ整形","定型メールの自動作成","集計・報告書の自動生成","ツール間のデータ連携"] },
+      "P07-B": { patternId:"P07", type:"自動化ステップアップ型", stars:5, lead:"転記よりも、AIを使った業務処理や判断補助の自動化が次の改善候補です。", priorities:["業務自動化","AI活用","運用設計"], improvements:["定型メールの自動生成","議事録からタスクの自動抽出","問い合わせ内容の自動分類","社内文書の自動下書き","自動化後の確認フロー整備"] },
+      "P08-A": { patternId:"P08", type:"改善ポイント不明型", stars:3, lead:"明確な問題が少ないため、業務全体を整理して改善効果の高い場所を見つける段階です。", priorities:["業務整理","効果測定","優先順位"], improvements:["業務フローの可視化","作業時間の簡易計測","改善候補の棚卸し","効果指標の設定","次に改善する業務の優先順位付け"] },
+      "P08-B": { patternId:"P08", type:"改善ポイント不明型", stars:4, lead:"AI利用は進んでいるため、次はチーム全体で安定して活用する運用整理が必要です。", priorities:["運用整理","チーム定着","効果測定"], improvements:["利用状況の整理","チーム共通ルールの見直し","活用業務の優先順位付け","成果が出た事例の共有","定着度を確認する簡易チェック"] }
+    };
+
+    const state = { step:0, answers:[], selectedIndex:null, activeQuestions:[], lead:null, leadId:null, result:null, scores:null };
+    const diagnosisModal = document.getElementById("diagnosisModal");
+    const resultModal = document.getElementById("resultModal");
+    const questionContainer = document.getElementById("questionContainer");
+    const progressText = document.getElementById("progressText");
+    const progressFill = document.getElementById("progressFill");
+    const resultContainer = document.getElementById("resultContainer");
+
+    function openModal(modal){ modal.classList.add("is-open"); document.body.classList.add("modal-open"); requestAnimationFrame(()=>modal.classList.add("is-visible")); }
+    function closeModal(modal){ modal.classList.remove("is-visible"); setTimeout(()=>{ modal.classList.remove("is-open"); if(!document.querySelector(".modal-backdrop.is-open")) document.body.classList.remove("modal-open"); },240); }
+    function startDiagnosis(){ state.step=0; state.answers=[]; state.selectedIndex=null; state.lead=null; state.leadId=null; state.activeQuestions=[questions[0],questions[1],questions[2]]; renderQuestion(); openModal(diagnosisModal); }
+    function currentQuestion(){ return state.activeQuestions[state.step]; }
+
+    function renderQuestion(){
+      const q=currentQuestion();
+      state.selectedIndex=state.answers[state.step]?.optionIndex ?? null;
+      progressText.textContent=`QUESTION ${state.step+1} / 4`;
+      progressFill.style.width=`${((state.step+1)/4)*100}%`;
+      questionContainer.innerHTML=`<div class="question-screen"><div class="question-kicker">QUESTION ${state.step+1}</div><h3 class="question-title">${q.title}</h3><p class="question-note">${q.note}</p><div class="option-list">${q.options.map((o,i)=>`<button class="option-card ${state.selectedIndex===i?"selected":""}" data-index="${i}" type="button"><span class="option-radio"></span><span class="option-main">${o.label}<span class="option-sub">${o.sub}</span></span></button>`).join("")}</div><div class="modal-actions"><button class="btn btn-secondary btn-back ${state.step>0?"is-visible":""}" type="button" id="backButton">戻る</button><button class="btn btn-primary btn-next" type="button" id="nextButton" ${state.selectedIndex===null?"disabled":""}>${state.step===3?"診断を完了する":"次へ"}</button></div></div>`;
+      questionContainer.querySelectorAll(".option-card").forEach(btn=>btn.addEventListener("click",()=>{ state.selectedIndex=Number(btn.dataset.index); questionContainer.querySelectorAll(".option-card").forEach(el=>el.classList.remove("selected")); btn.classList.add("selected"); document.getElementById("nextButton").disabled=false; }));
+      document.getElementById("backButton").addEventListener("click",()=>{ if(state.step>0){ state.step--; renderQuestion(); }});
+      document.getElementById("nextButton").addEventListener("click",goNext);
+    }
+
+    function goNext(){
+      if(state.selectedIndex===null)return;
+      const q=currentQuestion(), option=q.options[state.selectedIndex];
+      state.answers[state.step]={questionId:q.id,optionIndex:state.selectedIndex,option};
+      if(q.id==="aiUsage") state.activeQuestions[3]=branchQuestions[option.value];
+      if(state.step<3){ state.step++; renderQuestion(); } else { calculateDiagnosis(); closeModal(diagnosisModal); setTimeout(showLeadGate,270); }
+    }
+
+    function answerById(id){ return state.answers.find(a=>a?.questionId===id)?.option || {}; }
+    function calculateScores(){ const scores={transfer:0,manual:0,ai:0}; state.answers.forEach(a=>Object.keys(scores).forEach(k=>scores[k]+=Number(a?.option?.scores?.[k]||0))); scores.total=scores.transfer+scores.manual+scores.ai; return scores; }
+    function highTransfer(){ return ["high","mid"].includes(answerById("transfer").value); }
+
+    function calculateDiagnosis(){
+      const routine=answerById("routine").value, transfer=answerById("transfer").value, aiUsage=answerById("aiUsage").value, branch=answerById("aiBranch").value;
+      let branchId="P08-A", reason="明確な改善負担が少ないため、業務整理を優先";
+      if(aiUsage==="none" && branch==="security"){ branchId="P04-A"; reason="AI未利用で、情報管理・安全面への不安が最大の障壁"; }
+      else if(aiUsage==="none" && branch==="unknown"){ branchId=highTransfer()?"P03-B":"P03-A"; reason=highTransfer()?"AIの用途が不明で、転記負担も高い":"AIの用途が分からず、身近な活用例が必要"; }
+      else if(aiUsage==="none" && branch==="resource" && routine==="many" && transfer!=="high"){ branchId="P01-A"; reason="担当者不足に加え、転記以外の繰り返し作業が多い"; }
+      else if(aiUsage==="partial" && branch==="skill_gap"){ branchId="P05-A"; reason="AI利用者によって使い方・スキルに差がある"; }
+      else if(aiUsage==="partial" && branch==="not_shared"){ branchId="P05-B"; reason="便利なAI活用方法が社内で共有されていない"; }
+      else if(aiUsage==="partial" && branch==="not_embedded"){ branchId=highTransfer()?"P06-B":"P06-A"; reason=highTransfer()?"AIが日常業務に定着せず、転記負担も高い":"AIを試しているが日常業務へ組み込めていない"; }
+      else if(aiUsage==="active" && branch==="automation"){ branchId=highTransfer()?"P07-A":"P07-B"; reason=highTransfer()?"AI利用済みで、転記を含む定型業務の自動化余地が大きい":"AI利用済みで、業務処理の自動化へ進める段階"; }
+      else if(aiUsage==="active" && branch==="adoption"){ branchId="P08-B"; reason="AIをチーム全体へ定着させる運用整理が必要"; }
+      else if(aiUsage==="active" && branch==="measurement"){ branchId="P08-A"; reason="改善効果を可視化し、次の優先順位を整理する段階"; }
+      else if(highTransfer()){ branchId=aiUsage==="none"?"P02-A":"P02-B"; reason="同じ情報の入力・転記が高頻度で発生している"; }
+      else if(routine==="many"){ branchId="P01-A"; reason="転記以外の繰り返し手作業が多い"; }
+      state.scores=calculateScores(); state.result={...patterns[branchId],branchId,reason};
+    }
+
+    function isValidCompanyUrl(value){ try{ const url=new URL(/^https?:\/\//i.test(value)?value:`https://${value}`); return Boolean(url.hostname&&url.hostname.includes(".")); }catch{return false;} }
+
+    function showLeadGate(){
+      const data=state.result;
+      resultContainer.innerHTML=`<div class="lead-gate"><div class="lead-gate-head"><div class="lead-gate-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m5 12 4 4L19 6"/><circle cx="12" cy="12" r="9"/></svg></div><div class="result-badge">診断が完了しました</div><h2>${data.type}の傾向があります</h2><p class="lead-gate-lead">回答内容をもとに、御社で優先度の高い改善ポイントを整理しました。</p></div><div class="found-count"><span>あなたの会社では</span><strong>約5個の改善案</strong><span>が見つかりました。</span></div><div class="expectation-card"><div class="expectation-label">改善後の効果実感期待度</div><div class="expectation-stars">${"★".repeat(data.stars)}${"☆".repeat(5-data.stars)}</div></div><form class="lead-form" id="leadForm" novalidate><div class="form-field"><label for="companyName">会社名<span class="required-badge">必須</span></label><input id="companyName" type="text" autocomplete="organization" placeholder="例：株式会社〇〇" required><div class="field-error" id="companyNameError">会社名を入力してください。</div></div><div class="form-field"><label for="companyUrl">会社ホームページ<span class="required-badge">必須</span></label><input id="companyUrl" type="url" inputmode="url" placeholder="例：https://example.co.jp" required><div class="field-note">会社概要や事業内容を確認し、改善案を具体化するために使用します。</div><div class="field-error" id="companyUrlError">有効な会社ホームページURLを入力してください。</div></div><button class="btn btn-primary btn-full btn-large" id="leadSubmit" type="submit">改善案を見る</button><div class="submit-status" id="submitStatus"></div></form><p class="privacy-note">入力内容は、診断結果の提供および業務改善のご案内に利用します。</p></div>`;
+      document.getElementById("leadForm").addEventListener("submit",handleLeadSubmit); openModal(resultModal);
+    }
+
+    async function handleLeadSubmit(event){
+      event.preventDefault();
+      const nameInput=document.getElementById("companyName"), urlInput=document.getElementById("companyUrl"), name=nameInput.value.trim(), rawUrl=urlInput.value.trim();
+      [nameInput,urlInput].forEach(el=>el.classList.remove("is-error")); document.querySelectorAll(".field-error").forEach(el=>el.classList.remove("show"));
+      let valid=true; if(!name){valid=false;nameInput.classList.add("is-error");document.getElementById("companyNameError").classList.add("show");} if(!rawUrl||!isValidCompanyUrl(rawUrl)){valid=false;urlInput.classList.add("is-error");document.getElementById("companyUrlError").classList.add("show");} if(!valid)return;
+      state.lead={companyName:name,companyUrl:/^https?:\/\//i.test(rawUrl)?rawUrl:`https://${rawUrl}`};
+      showAnalysisLoader();
+      try{
+        const response=await fetch(GAS_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(buildLeadPayload())});
+        const data=await response.json(); if(!data.success) throw new Error(data.message||"保存に失敗しました。"); state.leadId=data.leadId; await runAnalysisAnimation(); showResult();
+      }catch(error){ console.error(error); showLeadGate(); document.getElementById("submitStatus").textContent="通信に失敗しました。時間をおいてもう一度お試しください。"; document.getElementById("companyName").value=state.lead.companyName; document.getElementById("companyUrl").value=state.lead.companyUrl; }
+    }
+
+    function buildLeadPayload(){
+      const q1=state.answers[0]?.option?.label||"",q2=state.answers[1]?.option?.label||"",q3=state.answers[2]?.option?.label||"",q4=state.answers[3]?.option?.label||"";
+      return {action:"createLead",companyName:state.lead.companyName,companyUrl:state.lead.companyUrl,patternId:state.result.patternId,diagnosisType:state.result.type,branchId:state.result.branchId,branchReason:state.result.reason,effectRating:`${"★".repeat(state.result.stars)}${"☆".repeat(5-state.result.stars)}`,aiUsage:answerById("aiUsage").value||"",branchAnswer:q4,scores:state.scores,answers:{q1,q2,q3,q4},priorities:state.result.priorities,improvements:state.result.improvements};
+    }
+
+    function showAnalysisLoader(){
+      resultContainer.innerHTML=`<div class="analysis-loader"><div class="analysis-orbit"><div class="analysis-orbit-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><path d="M4 14l5-5 4 4 7-7"/><path d="M15 6h5v5"/></svg></div></div><h2>診断結果を作成しています</h2><p>回答内容と会社情報をもとに、改善効果の高いポイントを整理しています。</p><div class="analysis-steps"><div class="analysis-step active" id="analysisStep1"><span class="analysis-step-dot">1</span>会社情報を安全に保存しています</div><div class="analysis-step" id="analysisStep2"><span class="analysis-step-dot">2</span>回答傾向を分析しています</div><div class="analysis-step" id="analysisStep3"><span class="analysis-step-dot">3</span>改善案を選定しています</div></div></div>`;
+    }
+    const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+    async function runAnalysisAnimation(){ const s1=document.getElementById("analysisStep1"),s2=document.getElementById("analysisStep2"),s3=document.getElementById("analysisStep3"); await sleep(450); s1?.classList.replace("active","done"); s1?.querySelector(".analysis-step-dot")&&(s1.querySelector(".analysis-step-dot").textContent="✓"); s2?.classList.add("active"); await sleep(650); s2?.classList.replace("active","done"); s2?.querySelector(".analysis-step-dot")&&(s2.querySelector(".analysis-step-dot").textContent="✓"); s3?.classList.add("active"); await sleep(650); s3?.classList.replace("active","done"); s3?.querySelector(".analysis-step-dot")&&(s3.querySelector(".analysis-step-dot").textContent="✓"); await sleep(300); }
+
+    function showResult(){
+      const d=state.result, stars="★".repeat(d.stars)+"☆".repeat(5-d.stars), scoreEntries=[["転記・入力",state.scores.transfer],["手作業",state.scores.manual],["AI活用",state.scores.ai]], max=Math.max(...scoreEntries.map(x=>x[1]),1);
+      resultContainer.innerHTML=`<div class="result-hero"><div class="result-badge">${escapeHtml(state.lead.companyName)}の診断結果</div><div class="result-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 14l5-5 4 4 7-7"/><path d="M15 6h5v5"/></svg></div><h2 class="result-title" id="resultTitle">${d.type}</h2><p class="result-lead">${d.lead}</p></div><div class="expectation-card"><div class="expectation-label">改善後の効果実感期待度</div><div class="expectation-stars">${stars}</div><div class="expectation-text">回答内容に基づく、現時点での改善期待度です。</div></div><div class="result-panel" style="margin-top:18px;"><h3>御社で検討できる改善案</h3><div class="improvement-list">${d.improvements.map((item,i)=>`<div class="improvement-item"><div class="improvement-number">${String(i+1).padStart(2,"0")}</div><div><h4>${item}</h4><p>${improvementDescription(item)}</p></div></div>`).join("")}</div></div><div class="result-panel" style="margin-top:14px;"><h3>回答傾向</h3><div class="score-bars">${scoreEntries.map(([label,value])=>`<div class="score-row"><span>${label}</span><div class="score-track"><div class="score-fill" style="width:${Math.max(8,value/max*100)}%"></div></div><strong>${value}</strong></div>`).join("")}</div></div><div class="free-offer"><strong>この中から1つ、無料で導入できます。</strong><span>御社の業務内容を確認し、効果が出やすい改善案を一緒に選定します。</span></div><div class="result-cta"><p>30分の無料相談で、御社に合う改善方法を具体的に整理します。</p><a class="btn btn-primary btn-full" href="${TIMEREX_URL}" target="_blank" rel="noopener" id="timerexButton">TimeRexで無料相談を予約する</a><div class="result-subactions"><button class="text-button" type="button" id="copyResult">診断結果をコピー</button></div></div>`;
+      document.getElementById("copyResult").addEventListener("click",copyResult); document.getElementById("timerexButton").addEventListener("click",recordTimerexClick);
+    }
+
+    function improvementDescription(item){ const map={"入力フォームの一本化":"複数の入力先を整理し、一度の入力で情報を活用できる状態を目指します。","Excel集計の自動化":"日次・週次・月次の集計作業を自動で更新できる形へ整えます。","AI利用ルールの作成":"安全に使うための入力基準や禁止事項を分かりやすく整理します。","業務フローの可視化":"業務の流れと停滞ポイントを見える状態にします。","定型メールの自動生成":"用途別の文章作成を短時間で行える仕組みを整えます。"}; return map[item]||"現在の業務に合わせて、無理なく始められる形へ具体化します。"; }
+
+    function recordTimerexClick(){ if(!state.leadId)return; fetch(GAS_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({action:"timerexClick",leadId:state.leadId}),keepalive:true}).catch(console.error); }
+    async function copyResult(){ const d=state.result,text=`【隣のカイゼンくん 無料業務改善診断】\n会社名：${state.lead?.companyName||""}\n会社HP：${state.lead?.companyUrl||""}\n診断タイプ：${d.type}\n改善後の効果実感期待度：${"★".repeat(d.stars)}${"☆".repeat(5-d.stars)}\n\n改善案\n・${d.improvements.join("\n・")}`; try{await navigator.clipboard.writeText(text);showToast("結果をコピーしました");}catch{showToast("コピーできませんでした");} }
+    function escapeHtml(value){ return String(value).replace(/[&<>'"]/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[ch])); }
+    function showToast(message){ const toast=document.getElementById("toast");toast.textContent=message;toast.classList.add("show");setTimeout(()=>toast.classList.remove("show"),2200); }
+
+    document.querySelectorAll(".js-open-diagnosis").forEach(btn=>btn.addEventListener("click",startDiagnosis));
+    document.querySelectorAll(".js-close-modal").forEach(btn=>btn.addEventListener("click",()=>closeModal(diagnosisModal)));
+    document.querySelectorAll(".js-close-result").forEach(btn=>btn.addEventListener("click",()=>closeModal(resultModal)));
+    [diagnosisModal,resultModal].forEach(modal=>modal.addEventListener("click",e=>{if(e.target===modal)closeModal(modal);}));
+    document.addEventListener("keydown",e=>{if(e.key==="Escape"){if(resultModal.classList.contains("is-open"))closeModal(resultModal);else if(diagnosisModal.classList.contains("is-open"))closeModal(diagnosisModal);}});
+    const header=document.getElementById("siteHeader"); window.addEventListener("scroll",()=>header.classList.toggle("scrolled",window.scrollY>18),{passive:true});
+    const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add("visible");observer.unobserve(entry.target);}}),{threshold:.14}); document.querySelectorAll(".reveal").forEach(el=>observer.observe(el));
+  </script>
 </body>
 </html>
