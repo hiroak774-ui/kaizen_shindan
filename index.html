@@ -895,7 +895,7 @@
 
   <script>
     const TIMEREX_URL = "https://timerex.net/s/kit19940501_5670/4a24126b/";
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbzIJqjkQnw34CkspPvRz2Qt9j4-rJtLx_DQldNgctPJs1OgC4OJbw5ooVTZHag1hXNo/exec";
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbyQbpgrWzkKCBfFwYKHPRoxByu8bBGlkOJ9ivgp3Rzp372KW1ItNpKWDYR0zWbfa8gsDg/exec";
 
     const questions = [
       {
@@ -1037,26 +1037,26 @@
 
     function showLeadGate(){
       const data=state.result;
-      resultContainer.innerHTML=`<div class="lead-gate"><div class="lead-gate-head"><div class="lead-gate-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m5 12 4 4L19 6"/><circle cx="12" cy="12" r="9"/></svg></div><div class="result-badge">診断が完了しました</div><h2>${data.type}の傾向があります</h2><p class="lead-gate-lead">回答内容をもとに、御社で優先度の高い改善ポイントを整理しました。</p></div><div class="found-count"><span>あなたの会社では</span><strong>約5個の改善案</strong><span>が見つかりました。</span></div><div class="expectation-card"><div class="expectation-label">改善後の効果実感期待度</div><div class="expectation-stars">${"★".repeat(data.stars)}${"☆".repeat(5-data.stars)}</div></div><form class="lead-form" id="leadForm" novalidate><div class="form-field"><label for="companyName">会社名<span class="required-badge">必須</span></label><input id="companyName" type="text" autocomplete="organization" placeholder="例：株式会社〇〇" required><div class="field-error" id="companyNameError">会社名を入力してください。</div></div><div class="form-field"><label for="companyUrl">会社ホームページ<span class="required-badge">必須</span></label><input id="companyUrl" type="url" inputmode="url" placeholder="例：https://example.co.jp" required><div class="field-note">会社概要や事業内容を確認し、改善案を具体化するために使用します。</div><div class="field-error" id="companyUrlError">有効な会社ホームページURLを入力してください。</div></div><button class="btn btn-primary btn-full btn-large" id="leadSubmit" type="submit">改善案を見る</button><div class="submit-status" id="submitStatus"></div></form><p class="privacy-note">入力内容は、診断結果の提供および業務改善のご案内に利用します。</p></div>`;
+      resultContainer.innerHTML=`<div class="lead-gate"><div class="lead-gate-head"><div class="lead-gate-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m5 12 4 4L19 6"/><circle cx="12" cy="12" r="9"/></svg></div><div class="result-badge">診断が完了しました</div><h2>${data.type}の傾向があります</h2><p class="lead-gate-lead">回答内容をもとに、御社で優先度の高い改善ポイントを整理しました。</p></div><div class="found-count"><span>あなたの会社では</span><strong>約5個の改善案</strong><span>が見つかりました。</span></div><div class="expectation-card"><div class="expectation-label">改善後の効果実感期待度</div><div class="expectation-stars">${"★".repeat(data.stars)}${"☆".repeat(5-data.stars)}</div></div><form class="lead-form" id="leadForm" novalidate><div class="form-field"><label for="companyName">会社名<span class="required-badge">必須</span></label><input id="companyName" type="text" autocomplete="organization" placeholder="例：株式会社〇〇" required><div class="field-error" id="companyNameError">会社名を入力してください。</div></div><div class="form-field"><label for="contactName">お名前（ご担当者様）<span class="required-badge">必須</span></label><input id="contactName" type="text" autocomplete="name" placeholder="例：田中 太郎" required><div class="field-error" id="contactNameError">お名前を入力してください。</div></div><div class="form-field"><label for="phone">電話番号<span class="optional-badge">任意</span></label><input id="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="例：03-1234-5678"><div class="field-error" id="phoneError">電話番号を入力してください。</div></div><div class="form-field"><label for="companyUrl">会社ホームページ<span class="optional-badge">任意</span></label><input id="companyUrl" type="url" inputmode="url" placeholder="例：https://example.co.jp"><div class="field-note">同名の会社がある場合など、会社確認の参考として使用します。</div><div class="field-error" id="companyUrlError">URLを入力する場合は、有効な形式で入力してください。</div></div><button class="btn btn-primary btn-full btn-large" id="leadSubmit" type="submit">改善案を見る</button><div class="submit-status" id="submitStatus"></div></form><p class="privacy-note">入力内容は、診断結果の提供および業務改善のご案内に利用します。</p></div>`;
       document.getElementById("leadForm").addEventListener("submit",handleLeadSubmit); openModal(resultModal);
     }
 
     async function handleLeadSubmit(event){
       event.preventDefault();
-      const nameInput=document.getElementById("companyName"), urlInput=document.getElementById("companyUrl"), name=nameInput.value.trim(), rawUrl=urlInput.value.trim();
-      [nameInput,urlInput].forEach(el=>el.classList.remove("is-error")); document.querySelectorAll(".field-error").forEach(el=>el.classList.remove("show"));
-      let valid=true; if(!name){valid=false;nameInput.classList.add("is-error");document.getElementById("companyNameError").classList.add("show");} if(!rawUrl||!isValidCompanyUrl(rawUrl)){valid=false;urlInput.classList.add("is-error");document.getElementById("companyUrlError").classList.add("show");} if(!valid)return;
-      state.lead={companyName:name,companyUrl:/^https?:\/\//i.test(rawUrl)?rawUrl:`https://${rawUrl}`};
+      const nameInput=document.getElementById("companyName"), contactInput=document.getElementById("contactName"), phoneInput=document.getElementById("phone"), urlInput=document.getElementById("companyUrl"), name=nameInput.value.trim(), contactName=contactInput.value.trim(), phone=phoneInput.value.trim(), rawUrl=urlInput.value.trim();
+      [nameInput,contactInput,phoneInput,urlInput].forEach(el=>el.classList.remove("is-error")); document.querySelectorAll(".field-error").forEach(el=>el.classList.remove("show"));
+      let valid=true; if(!name){valid=false;nameInput.classList.add("is-error");document.getElementById("companyNameError").classList.add("show");} if(!contactName){valid=false;contactInput.classList.add("is-error");document.getElementById("contactNameError").classList.add("show");} if(rawUrl&&!isValidCompanyUrl(rawUrl)){valid=false;urlInput.classList.add("is-error");document.getElementById("companyUrlError").classList.add("show");} if(!valid)return;
+      state.lead={companyName:name,contactName,phone,companyUrl:rawUrl?( /^https?:\/\//i.test(rawUrl)?rawUrl:`https://${rawUrl}` ):""};
       showAnalysisLoader();
       try{
         const response=await fetch(GAS_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(buildLeadPayload())});
         const data=await response.json(); if(!data.success) throw new Error(data.message||"保存に失敗しました。"); state.leadId=data.leadId; await runAnalysisAnimation(); showResult();
-      }catch(error){ console.error(error); showLeadGate(); document.getElementById("submitStatus").textContent="通信に失敗しました。時間をおいてもう一度お試しください。"; document.getElementById("companyName").value=state.lead.companyName; document.getElementById("companyUrl").value=state.lead.companyUrl; }
+      }catch(error){ console.error(error); showLeadGate(); document.getElementById("submitStatus").textContent="通信に失敗しました。時間をおいてもう一度お試しください。"; document.getElementById("companyName").value=state.lead.companyName; document.getElementById("contactName").value=state.lead.contactName||""; document.getElementById("phone").value=state.lead.phone||""; document.getElementById("companyUrl").value=state.lead.companyUrl||""; }
     }
 
     function buildLeadPayload(){
       const q1=state.answers[0]?.option?.label||"",q2=state.answers[1]?.option?.label||"",q3=state.answers[2]?.option?.label||"",q4=state.answers[3]?.option?.label||"";
-      return {action:"createLead",companyName:state.lead.companyName,companyUrl:state.lead.companyUrl,patternId:state.result.patternId,diagnosisType:state.result.type,branchId:state.result.branchId,branchReason:state.result.reason,effectRating:`${"★".repeat(state.result.stars)}${"☆".repeat(5-state.result.stars)}`,aiUsage:answerById("aiUsage").value||"",branchAnswer:q4,scores:state.scores,answers:{q1,q2,q3,q4},priorities:state.result.priorities,improvements:state.result.improvements};
+      return {action:"createLead",companyName:state.lead.companyName,companyUrl:state.lead.companyUrl,contactName:state.lead.contactName,phone:state.lead.phone,patternId:state.result.patternId,diagnosisType:state.result.type,branchId:state.result.branchId,branchReason:state.result.reason,effectRating:`${"★".repeat(state.result.stars)}${"☆".repeat(5-state.result.stars)}`,aiUsage:answerById("aiUsage").value||"",branchAnswer:q4,scores:state.scores,answers:{q1,q2,q3,q4},priorities:state.result.priorities,improvements:state.result.improvements};
     }
 
     function showAnalysisLoader(){
